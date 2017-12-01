@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<contentHaul xmlns:a="http://www.appian.com/ae/types/2009">
+    <rule>
+        <name>EMS_SendTask</name>
+        <uuid>_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16252</uuid>
+        <description>Interface to send an ad-hoc task from a record</description>
+        <parentUuid>41327b2c-a17c-4e00-8f1f-6e5ff91cb2fb</parentUuid>
+        <visibility>
+            <advertise>false</advertise>
+            <hierarchy>true</hierarchy>
+            <indexable>true</indexable>
+            <quota>false</quota>
+            <searchable>true</searchable>
+            <system>false</system>
+            <unlogged>false</unlogged>
+        </visibility>
+        <definition>=#"SYSTEM_SYSRULES_formLayout"(
+  label: if(
+    isnull(ri!recordId),
+    "Send Task",
+    "Send Task from " &amp; #"8ce86692-a813-43e9-a433-b3216531dc5f_GETONERECORD"(ri!recordId).employeeName
+  ),
+  instructions: "Details of this record will be embedded in the task form",
+  firstColumnContents: {
+    #"SYSTEM_SYSRULES_pickerFieldUsers"(
+      label: "Assignee",
+      instructions: if(
+        or(
+          isnull(ri!assignee),
+          isusermemberofgroup(ri!assignee, #"_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16212")
+        ),
+        "",
+        "This user is not in the Collaborators group. If you send a task to them, they will be given access to this application."
+      ),
+      maxSelections: 1,
+      value: ri!assignee,
+      saveInto: ri!assignee,
+      required: true
+    ),
+    #"SYSTEM_SYSRULES_paragraphField"(
+      label: "Task Description",
+      labelPosition: "ABOVE",
+      validations: if(len(ri!taskDetails)&gt;4000, "Message may not be longer than 4000 characters. You have entered " &amp; len(ri!taskDetails) &amp; " characters.", ""),
+      value: ri!taskDetails,
+      saveInto: ri!taskDetails,
+      required: true
+    ),
+    #"SYSTEM_SYSRULES_dateTimeField"(
+      label: "Deadline",
+      value: ri!deadline,
+      saveInto: ri!deadline,
+      validations: if(
+        ri!deadline &lt; now(),
+        "Deadlines must be in the future",
+        ""
+      )
+    )
+  },
+  buttons: #"SYSTEM_SYSRULES_ButtonLayout"(
+    primaryButtons: {
+      #"SYSTEM_SYSRULES_ButtonWidgetSubmit"(
+        label: "Send Task",
+        style: "PRIMARY",
+        confirmMessage: if(
+          or(
+            isnull(ri!assignee),
+            isusermemberofgroup(ri!assignee, #"_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16212")
+          ),
+          "",
+          "Are you sure you want to send a task to this user? They will receive access to all functionality in the Employee Management System application."
+        ),
+        saveInto: {
+          a!save(ri!taskedOn, now()),
+          a!save(ri!taskFrom, loggedinuser())
+        }
+      )
+    },
+    secondaryButtons: {
+      #"SYSTEM_SYSRULES_ButtonWidgetSubmit"(
+        label: "Cancel",
+        style: "NORMAL",
+        value: true,
+        saveInto: ri!cancel,
+        skipValidation: true
+      )
+    }
+  )
+)</definition>
+        <namedTypedValue>
+            <name>assignee</name>
+            <type>
+                <name>User</name>
+                <namespace>http://www.appian.com/ae/types/2009</namespace>
+            </type>
+        </namedTypedValue>
+        <namedTypedValue>
+            <name>taskDetails</name>
+            <type>
+                <name>string</name>
+                <namespace>http://www.w3.org/2001/XMLSchema</namespace>
+            </type>
+            <value/>
+        </namedTypedValue>
+        <namedTypedValue>
+            <name>taskedOn</name>
+            <type>
+                <name>dateTime</name>
+                <namespace>http://www.w3.org/2001/XMLSchema</namespace>
+            </type>
+        </namedTypedValue>
+        <namedTypedValue>
+            <name>taskFrom</name>
+            <type>
+                <name>User</name>
+                <namespace>http://www.appian.com/ae/types/2009</namespace>
+            </type>
+        </namedTypedValue>
+        <namedTypedValue>
+            <name>recordId</name>
+            <type>
+                <name>int</name>
+                <namespace>http://www.w3.org/2001/XMLSchema</namespace>
+            </type>
+        </namedTypedValue>
+        <namedTypedValue>
+            <name>cancel</name>
+            <type>
+                <name>boolean</name>
+                <namespace>http://www.w3.org/2001/XMLSchema</namespace>
+            </type>
+        </namedTypedValue>
+        <namedTypedValue>
+            <name>deadline</name>
+            <type>
+                <name>dateTime</name>
+                <namespace>http://www.w3.org/2001/XMLSchema</namespace>
+            </type>
+        </namedTypedValue>
+        <preferredEditor>interface</preferredEditor>
+        <offlineEnabled>false</offlineEnabled>
+    </rule>
+    <roleMap public="true">
+        <role inherit="true" allowForAll="false" name="readers">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="true" allowForAll="false" name="authors">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="true" allowForAll="false" name="administrators">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="false" allowForAll="false" name="denyReaders">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="false" allowForAll="false" name="denyAuthors">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="false" allowForAll="false" name="denyAdministrators">
+            <users/>
+            <groups/>
+        </role>
+    </roleMap>
+</contentHaul>

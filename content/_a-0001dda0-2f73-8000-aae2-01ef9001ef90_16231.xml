@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<contentHaul xmlns:a="http://www.appian.com/ae/types/2009">
+    <rule>
+        <name>EMS_RemoveInactiveValues</name>
+        <uuid>_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16231</uuid>
+        <description>Takes a list of CDTs and removes all of the inactive values except the ones specified</description>
+        <parentUuid>5dc87a26-e9e7-4449-b03a-da1a577e6c21</parentUuid>
+        <visibility>
+            <advertise>false</advertise>
+            <hierarchy>true</hierarchy>
+            <indexable>true</indexable>
+            <quota>false</quota>
+            <searchable>true</searchable>
+            <system>false</system>
+            <unlogged>false</unlogged>
+        </visibility>
+        <definition>with(
+  /* These are the options to not remove, because this record *
+   * has them stored and so they should be displayed.         */
+  local!exceptions: wherecontains(ri!exception, ri!values.value),
+  /* All the inactive options to remove                       */ 
+  local!inactives: where(not(ri!values.active), null),
+  /* Remove all the inactive options, minus the exceptions.   */
+  if(
+    isnull(local!inactives),
+    ri!values,
+    remove(
+      ri!values,
+      remove(local!inactives, wherecontains(local!exceptions, local!inactives))
+    )
+  )
+)</definition>
+        <namedTypedValue>
+            <name>values</name>
+            <type>
+                <name>Variant</name>
+                <namespace>http://www.appian.com/ae/types/2009</namespace>
+            </type>
+        </namedTypedValue>
+        <namedTypedValue>
+            <name>exception</name>
+            <type>
+                <name>Text?list</name>
+                <namespace>http://www.appian.com/ae/types/2009</namespace>
+            </type>
+        </namedTypedValue>
+        <preferredEditor>legacy</preferredEditor>
+        <offlineEnabled>false</offlineEnabled>
+    </rule>
+    <roleMap public="true">
+        <role inherit="true" allowForAll="false" name="readers">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="true" allowForAll="false" name="authors">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="true" allowForAll="false" name="administrators">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="false" allowForAll="false" name="denyReaders">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="false" allowForAll="false" name="denyAuthors">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="false" allowForAll="false" name="denyAdministrators">
+            <users/>
+            <groups/>
+        </role>
+    </roleMap>
+</contentHaul>

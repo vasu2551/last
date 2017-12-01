@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<contentHaul xmlns:a="http://www.appian.com/ae/types/2009">
+    <rule>
+        <name>EMS_EMSApproveDetails</name>
+        <uuid>_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16324</uuid>
+        <description>Approval section for EMS
+ </description>
+        <parentUuid>41327b2c-a17c-4e00-8f1f-6e5ff91cb2fb</parentUuid>
+        <visibility>
+            <advertise>false</advertise>
+            <hierarchy>true</hierarchy>
+            <indexable>true</indexable>
+            <quota>false</quota>
+            <searchable>true</searchable>
+            <system>false</system>
+            <unlogged>false</unlogged>
+        </visibility>
+        <definition>load(
+  local!EMS_statusOptions: if(ri!record.EMS_status.active,#"_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16231"(#"_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16263"(), null),#"_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16231"(#"_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16263"(), ri!record.EMS_status.value)),
+  local!EMS_priorityOptions: if(ri!record.EMS_priority.active,#"_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16231"(#"_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16264"(), null),#"_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16231"(#"_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16264"(), ri!record.EMS_priority.value)),
+  local!EMS_departmentOptions: if(ri!record.EMS_department.active,#"_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16231"(#"_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16265"(), null),#"_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16231"(#"_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16265"(), ri!record.EMS_department.value)),
+  {
+    #"SYSTEM_SYSRULES_sectionLayout"(
+      label: "Approve Employee Details",
+      firstColumnContents: {
+        #"SYSTEM_SYSRULES_textField"(
+          label: "Employee Name",
+          labelPosition: if(ri!readOnly, "ADJACENT", "ABOVE"),
+          required: not(ri!readOnly),
+          value: ri!record.employeeName,
+          saveInto: ri!record.employeeName,
+          readOnly: ri!readOnly,
+          validations: if(
+            len(ri!record.employeeName) &lt;= 200,
+            "",
+            "Value may not be longer than 200 characters. You have entered " &amp; len(ri!record.employeeName) &amp; " characters."
+          )
+        ),
+        #"SYSTEM_SYSRULES_dateField"(
+          label: "Date Of Birth",
+          labelPosition: if(ri!readOnly, "ADJACENT", "ABOVE"),
+          instructions: if(ri!readOnly, "", ""),
+          helpTooltip: if(ri!readOnly, "", ""),
+          required: not(ri!readOnly),
+          value: ri!record.dateOfBirth,
+          saveInto: ri!record.dateOfBirth,
+          readOnly: ri!readOnly
+        ),
+        #"SYSTEM_SYSRULES_textField"(
+          label: "Total Experience",
+          labelPosition: if(ri!readOnly, "ADJACENT", "ABOVE"),
+          instructions: if(ri!readOnly, "", ""),
+          helpTooltip: if(ri!readOnly, "", ""),
+          placeholder: if(ri!readOnly, "", ""),
+          required: false,
+          value: ri!record.totalExperience,
+          saveInto: ri!record.totalExperience,
+          readOnly: ri!readOnly,
+          validations: if(
+            len(ri!record.totalExperience) &lt;= 200,
+            "",
+            "Value may not be longer than 200 characters. You have entered " &amp; len(ri!record.totalExperience) &amp; " characters."
+          )
+        ),
+        if(
+          ri!readOnly,
+          #"SYSTEM_SYSRULES_textField"(
+            label: "Status",
+            labelPosition: "ADJACENT",
+            value: ri!record.EMS_status.value,
+            readOnly: true
+          ),
+          #"SYSTEM_SYSRULES_dropdownField"(
+            label: "Status",
+            labelPosition: "ABOVE",
+            placeholderLabel: "--- Select a Value ---",
+            choiceLabels: local!EMS_statusOptions.value,
+            choiceValues: local!EMS_statusOptions,
+            required: not(ri!readOnly),
+            value: ri!record.EMS_status,
+            saveInto: ri!record.EMS_status
+          )
+        ),
+        if(
+          ri!creating,
+          {},
+          {
+            #"SYSTEM_SYSRULES_linkField"(
+              label: "Created By",
+              labelPosition: if(ri!readOnly, "ADJACENT", "ABOVE"),
+              links: #"SYSTEM_SYSRULES_userRecordLink"(
+                label: #"97597486-ded5-4b50-a2f8-f297f610d000_FORMATNAME"(ri!record.createdBy),
+                user: ri!record.createdBy
+              )
+            ),
+            #"SYSTEM_SYSRULES_textField"(
+              label: "Created On",
+              labelPosition: if(ri!readOnly, "ADJACENT", "ABOVE"),
+              value: #"_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16226"(ri!record.createdOn),
+              readOnly: true
+            )
+          }
+        )
+      },
+      secondColumnContents: {
+        #"SYSTEM_SYSRULES_textField"(
+          label: "Email",
+          labelPosition: if(ri!readOnly, "ADJACENT", "ABOVE"),
+          required: not(ri!readOnly),
+          value: ri!record.email,
+          saveInto: ri!record.email,
+          readOnly: ri!readOnly,
+          validations: if(
+            len(ri!record.email) &lt;= 200,
+            "",
+            "Value may not be longer than 200 characters. You have entered " &amp; len(ri!record.email) &amp; " characters."
+          )
+        ),
+        if(
+          ri!readOnly,
+          #"SYSTEM_SYSRULES_textField"(
+            label: "Department",
+            labelPosition: "ADJACENT",
+            value: ri!record.EMS_department.value,
+            readOnly: true
+          ),
+          #"SYSTEM_SYSRULES_dropdownField"(
+            label: "Department",
+            labelPosition: "ABOVE",
+            instructions: "",
+            helpTooltip: "",
+            placeholderLabel: "--- Select a Value ---",
+            choiceLabels: local!EMS_departmentOptions.value,
+            choiceValues: local!EMS_departmentOptions,
+            required: not(ri!readOnly),
+            value: ri!record.EMS_department,
+            saveInto: ri!record.EMS_department
+          )
+        ),
+        #"SYSTEM_SYSRULES_floatingPointField"(
+          label: "Relative Experience",
+          labelPosition: if(ri!readOnly, "ADJACENT", "ABOVE"),
+          required: false,
+          value: ri!record.relativeExperience,
+          saveInto: ri!record.relativeExperience,
+          readOnly: ri!readOnly
+        ),
+        if(
+          ri!readOnly,
+          #"SYSTEM_SYSRULES_imageField"(
+            label: "Priority",
+            labelPosition: "ADJACENT",
+            images: #"_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16240"(ri!record.EMS_priority.value),
+            size: "ICON"
+          ),
+          #"SYSTEM_SYSRULES_dropdownField"(
+            label: "Priority",
+            labelPosition: "ABOVE",
+            instructions: "",
+            helpTooltip: "",
+            placeholderLabel: "--- Select a Value ---",
+            choiceLabels: local!EMS_priorityOptions.value,
+            choiceValues: local!EMS_priorityOptions,
+            required: not(ri!readOnly),
+            value: ri!record.EMS_priority,
+            saveInto: ri!record.EMS_priority
+          )
+        ),
+        if(
+          ri!creating,
+          {},
+          {
+            #"SYSTEM_SYSRULES_linkField"(
+              label: "Updated By",
+              labelPosition: if(ri!readOnly, "ADJACENT", "ABOVE"),
+              links: #"SYSTEM_SYSRULES_userRecordLink"(
+                label: #"97597486-ded5-4b50-a2f8-f297f610d000_FORMATNAME"(ri!record.updatedBy),
+                user: ri!record.updatedBy
+              )
+            ),
+            #"SYSTEM_SYSRULES_textField"(
+              label: "Updated On",
+              labelPosition: if(ri!readOnly, "ADJACENT", "ABOVE"),
+              value: #"_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16226"(ri!record.updatedOn),
+              readOnly: true
+            )
+          }
+        )
+      }
+    ),
+    #"_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16239"(
+      documents: ri!documents,
+      /*deletedDocuments: ri!deletedDocuments,*/
+      readOnly: ri!readOnly,
+      target: if(ri!creating,
+        #"_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16217",
+        ri!record.folderId
+      )
+    ),
+    #"SYSTEM_SYSRULES_sectionLayout"(
+  label:"Approve",
+  firstColumnContents:{
+    #"SYSTEM_SYSRULES_radioButtonField"(
+      label:"Approve ?",
+       choiceLabels:{"Approve","Reject"}, 
+       choiceValues:{true(),false()},
+       choiceLayout:"COMPACT",
+       required:true(),
+       value:ri!approve_bol,
+       saveInto:ri!approve_bol
+    ),
+    if(
+      ri!approve_bol,
+      #"SYSTEM_SYSRULES_paragraphField"(
+        label:"Comments",
+        value:ri!comments,
+        saveInto:ri!comments
+      ),
+      #"SYSTEM_SYSRULES_paragraphField"(
+        label:"Comments",
+        required:true,
+        value:ri!comments,
+        saveInto:ri!comments
+      )
+    ),
+    {
+      #"SYSTEM_SYSRULES_ButtonLayout"(
+        
+         primaryButtons:{
+           #"SYSTEM_SYSRULES_ButtonWidgetSubmit"(
+             label:"Approve",
+             style:"PRIMARY",
+             value:true(),
+             saveInto:ri!approveButton
+           )
+         },
+          secondaryButtons:{
+           #"SYSTEM_SYSRULES_ButtonWidgetSubmit"(
+             label:"Cancel",
+             confirmMessage:"Are you sure to cancel ?",
+             skipValidation:true(),
+             value:false(),
+             saveInto:ri!cancelButton
+           )
+         }
+      )
+    }
+  }
+)
+  }
+)
+
+
+
+
+</definition>
+        <namedTypedValue>
+            <name>approve_bol</name>
+            <type>
+                <name>boolean</name>
+                <namespace>http://www.w3.org/2001/XMLSchema</namespace>
+            </type>
+        </namedTypedValue>
+        <namedTypedValue>
+            <name>comments</name>
+            <type>
+                <name>string</name>
+                <namespace>http://www.w3.org/2001/XMLSchema</namespace>
+            </type>
+            <value/>
+        </namedTypedValue>
+        <namedTypedValue>
+            <name>approveButton</name>
+            <type>
+                <name>boolean</name>
+                <namespace>http://www.w3.org/2001/XMLSchema</namespace>
+            </type>
+        </namedTypedValue>
+        <namedTypedValue>
+            <name>cancelButton</name>
+            <type>
+                <name>boolean</name>
+                <namespace>http://www.w3.org/2001/XMLSchema</namespace>
+            </type>
+        </namedTypedValue>
+        <namedTypedValue>
+            <name>documents</name>
+            <type>
+                <name>CollaborationDocument?list</name>
+                <namespace>http://www.appian.com/ae/types/2009</namespace>
+            </type>
+        </namedTypedValue>
+        <namedTypedValue>
+            <name>record</name>
+            <type>
+                <name>EMS_EMS</name>
+                <namespace>urn:com:appian:types:EMS</namespace>
+            </type>
+        </namedTypedValue>
+        <namedTypedValue>
+            <name>readOnly</name>
+            <type>
+                <name>boolean</name>
+                <namespace>http://www.w3.org/2001/XMLSchema</namespace>
+            </type>
+        </namedTypedValue>
+        <namedTypedValue>
+            <name>creating</name>
+            <type>
+                <name>boolean</name>
+                <namespace>http://www.w3.org/2001/XMLSchema</namespace>
+            </type>
+        </namedTypedValue>
+        <metadataExpr></metadataExpr>
+        <preferredEditor>interface</preferredEditor>
+        <offlineEnabled>false</offlineEnabled>
+    </rule>
+    <roleMap public="true">
+        <role inherit="true" allowForAll="false" name="readers">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="true" allowForAll="false" name="authors">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="true" allowForAll="false" name="administrators">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="false" allowForAll="false" name="denyReaders">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="false" allowForAll="false" name="denyAuthors">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="false" allowForAll="false" name="denyAdministrators">
+            <users/>
+            <groups/>
+        </role>
+    </roleMap>
+</contentHaul>

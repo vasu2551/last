@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<contentHaul xmlns:a="http://www.appian.com/ae/types/2009">
+    <rule>
+        <name>EMS_TaskGridColumn</name>
+        <uuid>_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16246</uuid>
+        <description>Generates a single column dynamically for use in the Open Tasks grid</description>
+        <parentUuid>5dc87a26-e9e7-4449-b03a-da1a577e6c21</parentUuid>
+        <visibility>
+            <advertise>false</advertise>
+            <hierarchy>true</hierarchy>
+            <indexable>true</indexable>
+            <quota>false</quota>
+            <searchable>true</searchable>
+            <system>false</system>
+            <unlogged>false</unlogged>
+        </visibility>
+        <definition>with(
+  local!columnData: index(ri!data, ri!columnConfig.field, {}),
+  local!columnDataCount: count(local!columnData),
+  if(and(ri!columnConfig.configuredFormatting = "TASK_STATUS", local!columnDataCount &gt; 0),
+    #"SYSTEM_SYSRULES_gridImageColumn"(
+      label: ri!columnConfig.label,
+      field: ri!columnConfig.field,
+      size: "ICON",
+      data: apply(
+        #"_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16233",
+        local!columnData
+      )
+    ),
+    if(
+      /* This excludes the record ID column from showing up, *
+       * because we're using it only for filtering purposes  */
+      ri!columnConfig.configuredFormatting = "NUMBER",
+      {},
+      #"SYSTEM_SYSRULES_gridTextColumn"(
+        label: ri!columnConfig.label,
+        field: ri!columnConfig.field,
+        alignment: if(
+          ri!columnConfig.configuredFormatting = "DATE_TIME",
+          "RIGHT",
+          "LEFT"
+        ),
+        data: if(
+          ri!columnConfig.configuredDrilldown = "USER_PROFILE",
+          apply(
+            #"97597486-ded5-4b50-a2f8-f297f610d000_FORMATNAME",
+            apply(fn!tostring, local!columnData)
+          ),
+          if(
+            ri!columnConfig.configuredFormatting = "DATE_TIME",
+            apply(
+              #"_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16226",
+              local!columnData
+            ),
+            local!columnData
+          )
+        ),
+        links: if(
+          ri!columnConfig.configuredDrilldown = "USER_PROFILE",
+          apply(
+            #"SYSTEM_SYSRULES_userRecordLink"(label: _, user: _),
+            merge(
+              local!columnData,
+              local!columnData
+            )
+          ),
+          {}
+        )
+      )
+    )
+  )
+)</definition>
+        <namedTypedValue>
+            <name>columnConfig</name>
+            <type>
+                <name>Variant</name>
+                <namespace>http://www.appian.com/ae/types/2009</namespace>
+            </type>
+        </namedTypedValue>
+        <namedTypedValue>
+            <name>data</name>
+            <type>
+                <name>Variant</name>
+                <namespace>http://www.appian.com/ae/types/2009</namespace>
+            </type>
+        </namedTypedValue>
+        <preferredEditor>interface</preferredEditor>
+        <offlineEnabled>false</offlineEnabled>
+    </rule>
+    <roleMap public="true">
+        <role inherit="true" allowForAll="false" name="readers">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="true" allowForAll="false" name="authors">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="true" allowForAll="false" name="administrators">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="false" allowForAll="false" name="denyReaders">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="false" allowForAll="false" name="denyAuthors">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="false" allowForAll="false" name="denyAdministrators">
+            <users/>
+            <groups/>
+        </role>
+    </roleMap>
+</contentHaul>

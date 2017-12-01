@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<contentHaul xmlns:a="http://www.appian.com/ae/types/2009">
+    <rule>
+        <name>EMS_GetActivityByRecord</name>
+        <uuid>_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16266</uuid>
+        <description>Returns all activity history for a single record</description>
+        <parentUuid>41327b2c-a17c-4e00-8f1f-6e5ff91cb2fb</parentUuid>
+        <visibility>
+            <advertise>false</advertise>
+            <hierarchy>true</hierarchy>
+            <indexable>true</indexable>
+            <quota>false</quota>
+            <searchable>true</searchable>
+            <system>false</system>
+            <unlogged>false</unlogged>
+        </visibility>
+        <definition>#"SYSTEM_SYSRULES_queryEntity"(
+  entity: #"e06f41de-9824-4bac-88e6-e878d655dda7_CHANGEDSECONSTANT",
+  query: #"SYSTEM_SYSRULES_query"(
+    logicalExpression: #"SYSTEM_SYSRULES_queryLogicalExpression"(
+      operator: "AND",
+      filters: {
+        #"SYSTEM_SYSRULES_queryFilter"(
+          field: "recordId",
+          operator: "=",
+          value: ri!recordId
+        ),
+        if(
+          isnull(ri!userFilter),
+          {},
+          #"SYSTEM_SYSRULES_queryFilter"(
+            field: "who",
+            operator: "=",
+            value: ri!userFilter
+          )
+        )
+      },
+      logicalExpressions: if(
+        isnull(ri!searchTerm),
+        {},
+        #"SYSTEM_SYSRULES_queryLogicalExpression"(
+          operator: "OR",
+          filters: {
+            #"SYSTEM_SYSRULES_queryFilter"(
+              field: "action",
+              operator: "includes",
+              value: ri!searchTerm
+            ),
+            #"SYSTEM_SYSRULES_queryFilter"(
+              field: "details",
+              operator: "includes",
+              value: ri!searchTerm
+            )
+          }
+        )
+      )
+    ),
+    pagingInfo: #"SYSTEM_SYSRULES_pagingInfo"(1, 25, #"SYSTEM_SYSRULES_sortInfo"("when", false))
+  )
+)</definition>
+        <namedTypedValue>
+            <name>recordId</name>
+            <type>
+                <name>int</name>
+                <namespace>http://www.w3.org/2001/XMLSchema</namespace>
+            </type>
+        </namedTypedValue>
+        <namedTypedValue>
+            <name>searchTerm</name>
+            <type>
+                <name>string</name>
+                <namespace>http://www.w3.org/2001/XMLSchema</namespace>
+            </type>
+            <value/>
+        </namedTypedValue>
+        <namedTypedValue>
+            <name>userFilter</name>
+            <type>
+                <name>User</name>
+                <namespace>http://www.appian.com/ae/types/2009</namespace>
+            </type>
+        </namedTypedValue>
+        <preferredEditor>legacy</preferredEditor>
+        <offlineEnabled>false</offlineEnabled>
+    </rule>
+    <roleMap public="false">
+        <role inherit="true" allowForAll="false" name="readers">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="true" allowForAll="false" name="authors">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="true" allowForAll="false" name="administrators">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="false" allowForAll="false" name="denyReaders">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="false" allowForAll="false" name="denyAuthors">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="false" allowForAll="false" name="denyAdministrators">
+            <users/>
+            <groups/>
+        </role>
+    </roleMap>
+</contentHaul>

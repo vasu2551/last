@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<contentHaul xmlns:a="http://www.appian.com/ae/types/2009">
+    <rule>
+        <name>EMS_OpenTasksGrid</name>
+        <uuid>_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16245</uuid>
+        <description>Grid showing open tasks for a given record</description>
+        <parentUuid>41327b2c-a17c-4e00-8f1f-6e5ff91cb2fb</parentUuid>
+        <visibility>
+            <advertise>false</advertise>
+            <hierarchy>true</hierarchy>
+            <indexable>true</indexable>
+            <quota>false</quota>
+            <searchable>true</searchable>
+            <system>false</system>
+            <unlogged>false</unlogged>
+        </visibility>
+        <definition>load(
+  local!pagingInfo: #"SYSTEM_SYSRULES_pagingInfo"(startIndex: 1, batchSize: 5),
+  with(
+    /* Retrieve data from the process report to use here */
+    local!report: a!queryProcessAnalytics(
+      report: #"_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16218",
+      contextProcessModels: #"_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16216",
+      query: #"SYSTEM_SYSRULES_query"(
+        filter: #"SYSTEM_SYSRULES_queryFilter"(
+          field: "c7",
+          operator: "=",
+          value: ri!recordId
+        ),
+        pagingInfo: local!pagingInfo
+      )
+    ),
+    {
+      /* If there is no data, display nothing.                                       *
+       * Otherwise, iterate over the column rule to show a grid of task information. */
+      if(
+        local!report.totalCount=0,
+        {},
+        #"SYSTEM_SYSRULES_gridField"(
+          label: local!report.name,
+          instructions: local!report.description,
+          emptyGridMessage: "There are no open tasks for this record",
+          totalCount: local!report.totalCount,
+          columns: {
+            apply(
+              #"_a-0001dda0-2f73-8000-aae2-01ef9001ef90_16246"(columnConfig: _, data: local!report.data),
+              local!report.columnConfigs
+            )
+          },
+          value: local!pagingInfo,
+          saveInto: local!pagingInfo
+        )
+      )
+    }
+  )
+)</definition>
+        <namedTypedValue>
+            <name>recordId</name>
+            <type>
+                <name>int</name>
+                <namespace>http://www.w3.org/2001/XMLSchema</namespace>
+            </type>
+        </namedTypedValue>
+        <preferredEditor>interface</preferredEditor>
+        <offlineEnabled>false</offlineEnabled>
+    </rule>
+    <roleMap public="true">
+        <role inherit="true" allowForAll="false" name="readers">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="true" allowForAll="false" name="authors">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="true" allowForAll="false" name="administrators">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="false" allowForAll="false" name="denyReaders">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="false" allowForAll="false" name="denyAuthors">
+            <users/>
+            <groups/>
+        </role>
+        <role inherit="false" allowForAll="false" name="denyAdministrators">
+            <users/>
+            <groups/>
+        </role>
+    </roleMap>
+</contentHaul>
